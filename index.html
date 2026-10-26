@@ -3,15 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KODE of Brewing - Lab</title>
-    <!-- Tailwind CSS for modern, clean styling -->
+    <title>KODE of Brewing - Visual Lab</title>
     <script src="https://jsdelivr.net"></script>
     <style>
-        /* Custom earthy coffee color palette styling */
         :root {
-            --bg-color: #F4F1EA;
-            --dark-green: #1C352D;
-            --accent-tan: #EBE5D8;
+            --bg-color: #F5F2EB;
+            --dark-green: #1B362C;
+            --accent-tan: #EAE3D5;
         }
         body {
             background-color: var(--bg-color);
@@ -24,91 +22,177 @@
         }
     </style>
 </head>
-<body class="p-4 md:p-8 max-w-md mx-auto">
+<body class="p-4 md:p-8 max-w-lg mx-auto">
 
-    <!-- Header Section -->
-    <header class="text-center my-6">
+    <!-- Header -->
+    <header class="text-center my-4">
         <h1 class="text-3xl font-serif font-bold tracking-tight">KODE of Brewing</h1>
-        <p class="text-sm opacity-75 mt-1">Interactive Extraction Lab</p>
+        <p class="text-xs opacity-75 uppercase tracking-widest mt-1">Extraction Control Lab</p>
     </header>
 
-    <!-- Navigation Toggles -->
-    <div class="flex justify-center space-x-2 my-6 bg-[#EBE5D8] p-1 rounded-full text-sm font-medium">
-        <button id="btn-simple" class="flex-1 py-1.5 px-4 rounded-full transition-all btn-active" onclick="setMode('simple')">Simple</button>
-        <button id="btn-advanced" class="flex-1 py-1.5 px-4 rounded-full transition-all text-gray-600" onclick="setMode('advanced')">Advanced</button>
-        <button id="btn-actual" class="flex-1 py-1.5 px-4 rounded-full transition-all text-gray-600" onclick="setMode('actual')">Actual</button>
+    <!-- Nav Toggles -->
+    <div class="flex justify-center space-x-2 my-4 bg-[#EAE3D5] p-1 rounded-full text-xs font-semibold">
+        <button id="btn-simple" class="flex-1 py-2 px-3 rounded-full transition-all btn-active" onclick="setMode('simple')">Simple</button>
+        <button id="btn-advanced" class="flex-1 py-2 px-3 rounded-full transition-all text-gray-600" onclick="setMode('advanced')">Advanced</button>
+        <button id="btn-actual" class="flex-1 py-2 px-3 rounded-full transition-all text-gray-600" onclick="setMode('actual')">Actual</button>
     </div>
 
-    <!-- Main Dynamic Interface Card -->
-    <main class="bg-white rounded-2xl p-6 shadow-sm border border-[#E4DFD5] space-y-6">
-        <h2 id="view-title" class="text-xl font-bold tracking-wide">Bloom, Turbulence, Drawdown</h2>
+    <!-- Main Workspace -->
+    <main class="bg-white rounded-2xl p-5 shadow-md border border-[#E1D9CC] space-y-4">
         
-        <!-- Placeholder for Interactive Visual/Canvas -->
-        <div class="aspect-square w-full bg-[#FBFBFA] rounded-xl border border-dashed border-gray-300 flex flex-col items-center justify-center p-4 text-center">
-            <span class="text-4xl mb-2">☕</span>
-            <p class="text-xs text-gray-500 font-mono">Interactive Chart Area</p>
-            <p id="mode-status" class="text-xs text-emerald-700 font-semibold mt-1">Currently displaying: Simple Mode</p>
+        <!-- Live Extraction Chart Title -->
+        <div class="flex justify-between items-center border-b border-gray-100 pb-2">
+            <h2 id="view-title" class="text-md font-bold tracking-wide uppercase">Coffee Control Chart</h2>
+            <span id="extraction-status" class="text-xs px-2 py-0.5 rounded-full font-mono bg-amber-100 text-amber-800">Plotting</span>
+        </div>
+        
+        <!-- INTERACTIVE GRAPH CANVAS -->
+        <div class="relative w-full bg-white rounded-xl border border-gray-200 p-2 flex justify-center items-center">
+            <canvas id="brewChart" width="400" height="350" class="w-full h-auto"></canvas>
         </div>
 
-        <!-- Recipe Controls Area -->
-        <div class="space-y-4">
+        <!-- Inputs Grid -->
+        <div class="grid grid-cols-2 gap-3 text-left">
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider mb-1">Water Input (grams)</label>
-                <input type="number" id="water-input" value="250" class="w-full bg-[#F4F1EA] border border-transparent rounded-xl p-3 text-lg font-semibold focus:outline-none focus:border-[#1C352D]" oninput="calculateBrew()">
+                <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-500">Coffee Grounds (g)</label>
+                <input type="number" id="coffee-input" value="15.0" step="0.1" class="w-full bg-[#F5F2EB] rounded-xl p-2.5 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-[#1B362C]" oninput="updateChart()">
             </div>
-            
             <div>
-                <label class="block text-xs font-bold uppercase tracking-wider mb-1">Target Coffee Ratio (1:x)</label>
-                <input type="number" id="ratio-input" value="16" class="w-full bg-[#F4F1EA] border border-transparent rounded-xl p-3 text-lg font-semibold focus:outline-none focus:border-[#1C352D]" oninput="calculateBrew()">
+                <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-500">Water Volume (g)</label>
+                <input type="number" id="water-input" value="250" step="1" class="w-full bg-[#F5F2EB] rounded-xl p-2.5 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-[#1B362C]" oninput="updateChart()">
             </div>
-
-            <!-- Auto-Calculated Output Result -->
-            <div class="bg-[#1C352D] text-[#F4F1EA] p-4 rounded-xl text-center shadow-inner">
-                <p class="text-xs uppercase tracking-widest opacity-75">Required Coffee Grounds</p>
-                <p id="coffee-output" class="text-3xl font-black mt-1">15.6g</p>
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-500">Target TDS / Strength (%)</label>
+                <input type="number" id="tds-input" value="1.35" step="0.05" class="w-full bg-[#F5F2EB] rounded-xl p-2.5 font-mono font-bold focus:outline-none focus:ring-1 focus:ring-[#1B362C]" oninput="updateChart()">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold uppercase tracking-wider mb-1 text-gray-500">Calculated Yield (%)</label>
+                <div id="yield-display" class="w-full bg-[#1B362C] text-white rounded-xl p-2.5 font-mono font-bold text-center">22.5%</div>
             </div>
         </div>
     </main>
 
-    <!-- Simple JavaScript Interaction Script -->
+    <!-- Chart Engine Script -->
     <script>
-        // Function to handle switching views (Simple, Advanced, Actual)
+        const canvas = document.getElementById('brewChart');
+        const ctx = canvas.getContext('2d');
+
         function setMode(mode) {
-            // Reset active states on all buttons
             document.getElementById('btn-simple').classList.remove('btn-active', 'text-gray-600');
             document.getElementById('btn-advanced').classList.remove('btn-active', 'text-gray-600');
             document.getElementById('btn-actual').classList.remove('btn-active', 'text-gray-600');
-            
-            // Highlight the active clicked button
             document.getElementById('btn-' + mode).classList.add('btn-active');
             
-            // Dynamically change text elements based on selected mode
-            const statusText = document.getElementById('mode-status');
-            const viewTitle = document.getElementById('view-title');
+            const title = document.getElementById('view-title');
+            if (mode === 'simple') title.innerText = "Coffee Control Chart";
+            if (mode === 'advanced') title.innerText = "Advanced Target Windows";
+            if (mode === 'actual') title.innerText = "Live Extraction Track";
+            updateChart();
+        }
+
+        function updateChart() {
+            const coffee = parseFloat(document.getElementById('coffee-input').value) || 0;
+            const water = parseFloat(document.getElementById('water-input').value) || 0;
+            const tds = parseFloat(document.getElementById('tds-input').value) || 0;
             
-            if (mode === 'simple') {
-                viewTitle.innerText = "Bloom, Turbulence, Drawdown";
-                statusText.innerText = "Currently displaying: Simple Mode";
-            } else if (mode === 'advanced') {
-                viewTitle.innerText = "Advanced Control & Extraction Window";
-                statusText.innerText = "Currently displaying: Advanced Grid";
-            } else if (mode === 'actual') {
-                viewTitle.innerText = "Actual Live Brew Data Tracking";
-                statusText.innerText = "Currently displaying: Real-time Plotting";
+            const liquidWeight = water - (coffee * 2);
+            let extYield = 0;
+            if (coffee > 0 && liquidWeight > 0) {
+                extYield = ((tds * liquidWeight) / coffee);
+            }
+            
+            document.getElementById('yield-display').innerText = extYield.toFixed(1) + "%";
+
+            const statusBadge = document.getElementById('extraction-status');
+            if (extYield < 18) {
+                statusBadge.innerText = "Under-Extracted";
+                statusBadge.className = "text-xs px-2 py-0.5 rounded-full font-mono bg-red-100 text-red-800";
+            } else if (extYield > 22) {
+                statusBadge.innerText = "Over-Extracted";
+                statusBadge.className = "text-xs px-2 py-0.5 rounded-full font-mono bg-purple-100 text-purple-800";
+            } else {
+                statusBadge.innerText = "Ideal Balance";
+                statusBadge.className = "text-xs px-2 py-0.5 rounded-full font-mono bg-emerald-100 text-emerald-800";
+            }
+
+            drawGraph(extYield, tds);
+        }
+
+        function drawGraph(currentYield, currentTds) {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            const padding = 40;
+            const graphWidth = canvas.width - padding * 2;
+            const graphHeight = canvas.height - padding * 2;
+
+            const minX = 14, maxX = 26; 
+            const minY = 0.8, maxY = 1.6; 
+
+            function getX(val) { return padding + ((val - minX) / (maxX - minX)) * graphWidth; }
+            function getY(val) { return canvas.height - padding - ((val - minY) / (maxY - minY)) * graphHeight; }
+
+            ctx.fillStyle = 'rgba(235, 245, 240, 0.8)'; 
+            ctx.fillRect(getX(18), getY(1.45), getX(22) - getX(18), getY(1.15) - getY(1.45));
+            ctx.strokeStyle = '#1B362C';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(getX(18), getY(1.45), getX(22) - getX(18), getY(1.15) - getY(1.45));
+
+            ctx.strokeStyle = '#EAE3D5';
+            ctx.fillStyle = '#666';
+            ctx.font = '10px monospace';
+            ctx.textAlign = 'center';
+
+            for(let x = minX; x <= maxX; x += 2) {
+                ctx.beginPath();
+                ctx.moveTo(getX(x), padding);
+                ctx.lineTo(getX(x), canvas.height - padding);
+                ctx.stroke();
+                ctx.fillText(x + '%', getX(x), canvas.height - padding + 15);
+            }
+
+            ctx.textAlign = 'right';
+            for(let y = minY; y <= maxY; y += 0.2) {
+                ctx.beginPath();
+                ctx.moveTo(padding, getY(y));
+                ctx.lineTo(canvas.width - padding, getY(y));
+                ctx.stroke();
+                ctx.fillText(y.toFixed(1) + '%', padding - 8, getY(y) + 3);
+            }
+
+            ctx.strokeStyle = '#1B362C';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+
+            ctx.fillStyle = '#1B362C';
+            ctx.font = 'bold 9px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('EXTRACTION YIELD (%)', canvas.width / 2, canvas.height - 8);
+            
+            ctx.save();
+            ctx.translate(12, canvas.height / 2);
+            ctx.rotate(-Math.PI / 2);
+            ctx.fillText('STRENGTH / TDS (%)', 0, 0);
+            ctx.restore();
+
+            if (currentYield >= minX && currentYield <= maxX && currentTds >= minY && currentTds <= maxY) {
+                ctx.beginPath();
+                ctx.arc(getX(currentYield), getY(currentTds), 7, 0, 2 * Math.PI);
+                ctx.fillStyle = '#C2410C'; 
+                ctx.shadowBlur = 6;
+                ctx.shadowColor = '#C2410C';
+                ctx.fill();
+                ctx.shadowBlur = 0; 
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
             }
         }
 
-        // Mathematical calculation function for the coffee brew
-        function calculateBrew() {
-            const water = parseFloat(document.getElementById('water-input').value) || 0;
-            const ratio = parseFloat(document.getElementById('ratio-input').value) || 1;
-            
-            if (ratio > 0) {
-                const coffeeRequired = (water / ratio).toFixed(1);
-                document.getElementById('coffee-output').innerText = coffeeRequired + "g";
-            }
-        }
+        updateChart();
     </script>
 </body>
 </html>
-
